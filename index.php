@@ -277,7 +277,184 @@
         .action-btn i {
             font-size: 0.85em;
         }
-        
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: var(--dark);
+            font-size: 1.8em;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: var(--dark);
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover {
+            color: var(--danger);
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .sql-section {
+            margin-bottom: 25px;
+        }
+
+        .sql-section h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .sql-display {
+            background: #f3f4f6;
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            color: #1f2937;
+        }
+
+        .output-section {
+            margin-top: 25px;
+        }
+
+        .output-section h3 {
+            color: var(--success);
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .output-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .output-table thead {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+        }
+
+        .output-table th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--success), #059669) !important;
+        }
+
+        .output-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .output-table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .spinner {
+            border: 4px solid var(--border);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #fee;
+            border-left: 4px solid var(--danger);
+            color: var(--danger);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .success-message {
+            background: #efe;
+            border-left: 4px solid var(--success);
+            color: var(--success);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
         footer {
             text-align: center;
             margin-top: 60px;
@@ -471,10 +648,12 @@
                     
                     $counter = 1;
                     foreach ($stringFunctions as $function) {
+                        $escapedSql = addslashes($function[2]);
                         echo "<tr>";
                         echo "<td><span class='func-name'>{$function[0]}</span></td>";
                         echo "<td><span class='func-description'>{$function[1]}</span></td>";
                         echo "<td><div class='sql-code'>{$function[2]}</div></td>";
+                        echo "<td><button class='action-btn' onclick=\"showOutput('{$function[0]}', '{$escapedSql}')\" title='Execute and view results'><i class='fas fa-play'></i>Try</button></td>";
                         echo "</tr>";
                         $counter++;
                     }
@@ -498,6 +677,7 @@
                             <th style="width: 120px;">Function</th>
                             <th style="width: 280px;">Description</th>
                             <th>Example Code</th>
+                            <th style="width: 110px;">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -543,10 +723,12 @@
                     
                     $counter = 1;
                     foreach ($numericFunctions as $function) {
+                        $escapedSql = addslashes($function[2]);
                         echo "<tr>";
                         echo "<td><span class='func-name'>{$function[0]}</span></td>";
                         echo "<td><span class='func-description'>{$function[1]}</span></td>";
                         echo "<td><div class='sql-code'>{$function[2]}</div></td>";
+                        echo "<td><button class='action-btn' onclick=\"showOutput('{$function[0]}', '{$escapedSql}')\" title='Execute and view results'><i class='fas fa-play'></i>Try</button></td>";
                         echo "</tr>";
                         $counter++;
                     }
@@ -570,6 +752,7 @@
                             <th style="width: 120px;">Function</th>
                             <th style="width: 280px;">Description</th>
                             <th>Example Code</th>
+                            <th style="width: 110px;">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -629,10 +812,12 @@
                     
                     $counter = 1;
                     foreach ($dateFunctions as $function) {
+                        $escapedSql = addslashes($function[2]);
                         echo "<tr>";
                         echo "<td><span class='func-name'>{$function[0]}</span></td>";
                         echo "<td><span class='func-description'>{$function[1]}</span></td>";
                         echo "<td><div class='sql-code'>{$function[2]}</div></td>";
+                        echo "<td><button class='action-btn' onclick=\"showOutput('{$function[0]}', '{$escapedSql}')\" title='Execute and view results'><i class='fas fa-play'></i>Try</button></td>";
                         echo "</tr>";
                         $counter++;
                     }
@@ -656,6 +841,7 @@
                             <th style="width: 120px;">Function</th>
                             <th style="width: 280px;">Description</th>
                             <th>Example Code</th>
+                            <th style="width: 110px;">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -684,10 +870,12 @@
                     
                     $counter = 1;
                     foreach ($advancedFunctions as $function) {
+                        $escapedSql = addslashes($function[2]);
                         echo "<tr>";
                         echo "<td><span class='func-name'>{$function[0]}</span></td>";
                         echo "<td><span class='func-description'>{$function[1]}</span></td>";
                         echo "<td><div class='sql-code'>{$function[2]}</div></td>";
+                        echo "<td><button class='action-btn' onclick=\"showOutput('{$function[0]}', '{$escapedSql}')\" title='Execute and view results'><i class='fas fa-play'></i>Try</button></td>";
                         echo "</tr>";
                         $counter++;
                     }
@@ -710,7 +898,7 @@
             </div>
             
             <div class="info-box">
-                <strong><i class="fas fa-lightbulb" style="margin-right: 8px;"></i>Pro Tip:</strong> Click on the "Try" buttons to see the actual results and outputs for each SQL function in action.
+                <strong><i class="fas fa-lightbulb" style="margin-right: 8px;"></i>Pro Tip:</strong> Click on the "Try" buttons to execute each SQL function and see the actual results and outputs in action. All queries run against the university_db database.
             </div>
             
             <div class="footer-stats">
@@ -729,5 +917,115 @@
             </div>
         </footer>
     </div>
+
+    <!-- Output Modal -->
+    <div id="outputModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><span id="functionName"></span> - Results</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="sql-section">
+                    <h3><i class="fas fa-code" style="margin-right: 8px;"></i>SQL Query</h3>
+                    <div class="sql-display" id="sqlDisplay"></div>
+                </div>
+                <div class="output-section" id="outputSection">
+                    <h3><i class="fas fa-table" style="margin-right: 8px;"></i>Query Results</h3>
+                    <div id="outputContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showOutput(functionName, sqlQuery) {
+            const modal = document.getElementById('outputModal');
+            const functionNameEl = document.getElementById('functionName');
+            const sqlDisplay = document.getElementById('sqlDisplay');
+            const outputContent = document.getElementById('outputContent');
+            
+            // Set function name and SQL query
+            functionNameEl.textContent = functionName;
+            sqlDisplay.textContent = sqlQuery;
+            
+            // Show loading state
+            outputContent.innerHTML = '<div class="loading"><div class="spinner"></div><p>Executing query...</p></div>';
+            modal.classList.add('show');
+            
+            // Fetch results from backend
+            fetch('execute_sql.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    sql: sqlQuery
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayResults(data.results, data.columns);
+                } else {
+                    outputContent.innerHTML = '<div class="error-message"><strong>Error:</strong> ' + data.error + '</div>';
+                }
+            })
+            .catch(error => {
+                outputContent.innerHTML = '<div class="error-message"><strong>Error:</strong> ' + error.message + '</div>';
+            });
+        }
+
+        function displayResults(results, columns) {
+            const outputContent = document.getElementById('outputContent');
+            
+            if (!results || results.length === 0) {
+                outputContent.innerHTML = '<div class="success-message">Query executed successfully with no results.</div>';
+                return;
+            }
+
+            // Create table
+            let html = '<table class="output-table"><thead><tr>';
+            columns.forEach(col => {
+                html += '<th>' + escapeHtml(col) + '</th>';
+            });
+            html += '</tr></thead><tbody>';
+
+            results.forEach(row => {
+                html += '<tr>';
+                columns.forEach(col => {
+                    const value = row[col] !== null ? row[col] : '<em>NULL</em>';
+                    html += '<td>' + escapeHtml(String(value)) + '</td>';
+                });
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            outputContent.innerHTML = html;
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('outputModal');
+            modal.classList.remove('show');
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('outputModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeModal();
+            }
+        });
+    </script>
 </body>
 </html>
